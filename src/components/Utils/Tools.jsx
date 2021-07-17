@@ -1,9 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { firebase } from "../../firebase";
 
 import mcitylogo from "../../Resources/images/logos/manchester_city_logo.png";
 
-const CityLogo = (props) => {
+export const CityLogo = (props) => {
   const template = (
     <div
       className="img_cover"
@@ -26,4 +28,26 @@ const CityLogo = (props) => {
   }
 };
 
-export default CityLogo;
+export const showErrorToast = (msg) => {
+  toast.error(msg, {
+    position: toast.POSITION.TOP_LEFT,
+  });
+};
+
+export const showSuccessToast = (msg) => {
+  toast.success(msg, {
+    position: toast.POSITION.TOP_RIGHT,
+  });
+};
+
+export const logoutHandler = () => {
+  firebase
+    .auth()
+    .signOut()
+    .then(() => {
+      showSuccessToast("GOOD BYEE");
+    })
+    .catch((err) => {
+      showErrorToast(err);
+    });
+};

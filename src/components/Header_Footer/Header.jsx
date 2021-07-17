@@ -1,9 +1,10 @@
 import React from "react";
 import { AppBar, Toolbar, Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import CityLogo from "../Utils/Tools";
+import { CityLogo } from "../Utils/Tools";
+import { logoutHandler } from "../Utils/Tools";
 
-const Header = () => {
+const Header = ({ user }) => {
   return (
     <AppBar
       position="fixed"
@@ -27,10 +28,17 @@ const Header = () => {
         <Link to="/the_matches">
           <Button color="inherit">Matches</Button>
         </Link>
+        {user ? (
+          <>
+            <Link to="/dashboard">
+              <Button color="inherit">Dashboard</Button>
+            </Link>
 
-        <Link to="/dashboard">
-          <Button color="inherit">Dashboard</Button>
-        </Link>
+            <Button color="inherit" onClick={() => logoutHandler()}>
+              Log-out
+            </Button>
+          </>
+        ) : null}
       </Toolbar>
     </AppBar>
   );

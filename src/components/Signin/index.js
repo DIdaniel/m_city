@@ -1,28 +1,26 @@
 import React, { useState } from "react";
 import { firebase } from "../../firebase";
+
 import { CircularProgress } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { showErrorToast, showSuccessToast } from "../Utils/Tools";
 
 const SignIn = (props) => {
   const [loading, setLoading] = useState(false);
-
   const formik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: "francis@gmail.com",
+      password: "testing123",
     },
-
     validationSchema: Yup.object({
       email: Yup.string()
-        .email("맞지 않는 이메일이래용!!")
-        .required("오 이메일이 맞았어요!!!"),
-      password: Yup.string()
-        .required("패스워드가 맞았어요!!")
-        .min(5, "10자 이상 팰요해요!"),
+        .email("Invalid email address")
+        .required("The email is required"),
+      password: Yup.string().required("The email is required"),
     }),
-
     onSubmit: (values) => {
       setLoading(true);
       submitForm(values);
@@ -34,50 +32,57 @@ const SignIn = (props) => {
       .auth()
       .signInWithEmailAndPassword(values.email, values.password)
       .then(() => {
+        showSuccessToast("Welcome back !!");
         props.history.push("/dashboard");
       })
       .catch((error) => {
         setLoading(false);
-        alert(error);
+        showErrorToast(error.message);
       });
   };
 
   return (
-    <div className="container">
-      <div className="signin_wrapper" style={{ margin: "100px" }}>
-        <form onSubmit={formik.handleSubmit}>
-          <h2>Login Plz..🥴</h2>
-          <input
-            name="email"
-            placeholder="Email"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-          />
-          {formik.touched.email && formik.errors.email ? (
-            <div className="error_label">{formik.errors.email}</div>
-          ) : null}
-          <input
-            type="password"
-            name="password"
-            placeholder="password"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.password}
-          />
+    <>
+      {!props.user ? (
+        <div className="container">
+          <div className="signin_wrapper" style={{ margin: "100px" }}>
+            <form onSubmit={formik.handleSubmit}>
+              <h2>Please login</h2>
+              <input
+                name="email"
+                placeholder="Email"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.email}
+              />
+              {formik.touched.email && formik.errors.email ? (
+                <div className="error_label">{formik.errors.email}</div>
+              ) : null}
 
-          {formik.touched.password && formik.errors.password ? (
-            <div className="error_label">{formik.errors.password}</div>
-          ) : null}
+              <input
+                placeholder="enter your password"
+                name="password"
+                type="password"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.password}
+              />
+              {formik.touched.password && formik.errors.password ? (
+                <div className="error_label">{formik.errors.password}</div>
+              ) : null}
 
-          {loading ? (
-            <CircularProgress color="secondary" className="progress" />
-          ) : (
-            <button type="submit">LOG IN</button>
-          )}
-        </form>
-      </div>
-    </div>
+              {loading ? (
+                <CircularProgress color="secondary" className="progress" />
+              ) : (
+                <button type="submit">Log in</button>
+              )}
+            </form>
+          </div>
+        </div>
+      ) : (
+        <Redirect to={"/dashboard"} />
+      )}
+    </>
   );
 };
 
